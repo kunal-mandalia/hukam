@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<head>
+  <style>
+    img {
+      height: 400px;
+      aspect-ratio: auto;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <label for="file">Choose file to upload</label>
+    <input type="file" id="file" name="file" multiple>
+    <div id="images"></div>
+  </div>
+  <script src="storage.js"></script>
+  <script>
+    const input = document.querySelector('input')
+    input.addEventListener('change', HUKAM.updateImageDisplay);
+    HUKAM.main()
+  </script>
+</body>
+</html>
