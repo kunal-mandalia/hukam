@@ -1,6 +1,6 @@
 importScripts('/cache-polyfill.js');
 
-const CACHE_VERSION = 15;
+const CACHE_VERSION = 16;
 const CACHE_KEY = `hukam_v${CACHE_VERSION}`;
 
 self.addEventListener('install', function (e) {
