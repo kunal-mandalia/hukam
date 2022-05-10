@@ -34,10 +34,6 @@ self.addEventListener('activate', function (event) {
         return Promise.all(
           cacheNames
             .filter(function (cacheName) {
-              // Return true if you want to remove this cache,
-              // but remember that caches are shared across
-              // the whole origin
-              console.log({ cacheName })
               return cacheName !== CACHE_KEY;
             })
             .map(function (cacheName) {
