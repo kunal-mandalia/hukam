@@ -11,13 +11,14 @@ HUKAM.getBase64 = (file) => {
   })
 }
 
-HUKAM.appendImage = (file, parent) => {
+HUKAM.appendImage = (file) => {
   const image = document.createElement('img')
   image.src = URL.createObjectURL(file)
+  const parent = document.getElementById('files-container')
   parent.appendChild(image)
 }
 
-HUKAM.appendVideo = (file, parent) => {
+HUKAM.appendVideo = (file) => {
   const video = document.createElement('video')
   video.setAttribute('width', 400)
   video.setAttribute('controls', true)
@@ -27,6 +28,7 @@ HUKAM.appendVideo = (file, parent) => {
   source.type = 'video/mp4' // TODO: handle other types
 
   video.appendChild(source)
+  const parent = document.getElementById('files-container')
   parent.appendChild(video)
 }
 
@@ -50,34 +52,28 @@ HUKAM.handleSelectFiles = async (input) => {
   console.log(input)
   const files = input.target.files || []
   for (const file of files) {
-    if (file.type.contains('image')) {
-      HUKAM.appendImage(file, document.getElementById('files-container'))
+    if (file.type.includes('image')) {
+      HUKAM.appendImage(file)
     }
-    if (file.type.contains('video')) {
-      HUKAM.appendVideo(file, document.getElementById('files-container'))
+    if (file.type.includes('video')) {
+      HUKAM.appendVideo(file)
     }
     HUKAM.storeFile(file, file.type)
   }
 }
 
 HUKAM.loadFiles = () => {
-  const transaction = HUKAM.db.transaction(['files '], 'readonly')
+  const transaction = HUKAM.db.transaction(['files'], 'readonly')
   const objectStore = transaction.objectStore('files')
   objectStore.getAll().onsuccess = (event) => {
     console.log({ files: event.target.result })
-    const files = event.target.result
-    files.forEach((file) => {
-      if (file.type.contains('image')) {
-        HUKAM.appendImage(
-          image.file,
-          document.getElementById('files-container')
-        )
+    const results = event.target.result
+    results.forEach((result) => {
+      if (result.file.type.includes('image')) {
+        HUKAM.appendImage(result.file)
       }
-      if (file.type.contains('video')) {
-        HUKAM.appendVideo(
-          image.file,
-          document.getElementById('files-container')
-        )
+      if (result.file.type.includes('video')) {
+        HUKAM.appendVideo(result.file)
       }
     })
   }
@@ -93,7 +89,7 @@ HUKAM.main = () => {
     HUKAM.db.onerror = (event) => {
       console.error('Database error: ' + event.target.errorCode)
     }
-    HUKAM.loadImages()
+    HUKAM.loadFiles()
     console.log('DB connected')
   }
   request.onupgradeneeded = (event) => {
