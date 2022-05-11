@@ -17,72 +17,93 @@ HUKAM.appendImage = (file, parent) => {
   parent.appendChild(image)
 }
 
-HUKAM.storeImage = (file) => {
-  const transaction = HUKAM.db.transaction(['images'], 'readwrite')
+HUKAM.appendVideo = (file, parent) => {
+  const video = document.createElement('video')
+  video.setAttribute('width', 400)
+  video.setAttribute('controls', true)
+
+  const source = document.createElement('source')
+  source.src = URL.createObjectURL(file)
+  source.type = 'video/mp4' // TODO: handle other types
+
+  video.appendChild(source)
+  parent.appendChild(video)
+}
+
+HUKAM.storeFile = (file) => {
+  const transaction = HUKAM.db.transaction(['files'], 'readwrite')
   transaction.oncomplete = (event) => {}
   transaction.onerror = (event) => {}
 
-  const objectStore = transaction.objectStore('images')
+  const objectStore = transaction.objectStore('files')
   const request = objectStore.add({
     id: Date.now(),
     file,
   })
   request.onsuccess = (event) => {
-    console.log('Image saved!')
+    console.log('File saved!')
   }
 }
 
-// TODO: handle video
-HUKAM.updateImageDisplay = async (input) => {
-  console.log('updateImageDisplay')
+HUKAM.handleSelectFiles = async (input) => {
+  console.log('handleFilesSelect')
   console.log(input)
   const files = input.target.files || []
   for (const file of files) {
-    const src = URL.createObjectURL(file)
-    const base64 = await HUKAM.getBase64(file)
-    console.log({ src, base64, file })
-
-    HUKAM.appendImage(file, document.getElementById('images'))
-    HUKAM.storeImage(file)
+    if (file.type.contains('image')) {
+      HUKAM.appendImage(file, document.getElementById('files-container'))
+    }
+    if (file.type.contains('video')) {
+      HUKAM.appendVideo(file, document.getElementById('files-container'))
+    }
+    HUKAM.storeFile(file, file.type)
   }
 }
 
-HUKAM.loadImages = () => {
-  console.log('loadImages')
-  const transaction = HUKAM.db.transaction(['images'], 'readonly')
-  const objectStore = transaction.objectStore('images')
+HUKAM.loadFiles = () => {
+  const transaction = HUKAM.db.transaction(['files '], 'readonly')
+  const objectStore = transaction.objectStore('files')
   objectStore.getAll().onsuccess = (event) => {
-    console.log('Got all images: ' + event.target.result)
-    const images = event.target.result
-    images.forEach((image) => {
-      HUKAM.appendImage(image.file, document.getElementById('images'))
+    console.log({ files: event.target.result })
+    const files = event.target.result
+    files.forEach((file) => {
+      if (file.type.contains('image')) {
+        HUKAM.appendImage(
+          image.file,
+          document.getElementById('files-container')
+        )
+      }
+      if (file.type.contains('video')) {
+        HUKAM.appendVideo(
+          image.file,
+          document.getElementById('files-container')
+        )
+      }
     })
   }
 }
 
 HUKAM.main = () => {
-  const request = indexedDB.open('MyTestDatabase')
+  const request = indexedDB.open('hukam-db')
   request.onerror = (event) => {
     console.log("Why didn't you allow my web app to use IndexedDB?!")
   }
   request.onsuccess = (event) => {
     HUKAM.db = event.target.result
     HUKAM.db.onerror = (event) => {
-      // Generic error handler for all errors targeted at this database's
-      // requests!
       console.error('Database error: ' + event.target.errorCode)
     }
     HUKAM.loadImages()
     console.log('DB connected')
   }
   request.onupgradeneeded = (event) => {
-    // Save the IDBDatabase interface
     HUKAM.db = event.target.result
 
-    // Create an objectStore for this database
-    const objectStore = HUKAM.db.createObjectStore('images', { keyPath: 'id' })
-    objectStore.transaction.oncomplete = (event) => {
-      console.log('objectStore images created')
+    const imagesObjectStore = HUKAM.db.createObjectStore('files', {
+      keyPath: 'id',
+    })
+    imagesObjectStore.transaction.oncomplete = (event) => {
+      console.log('objectStore files created')
     }
   }
 }
