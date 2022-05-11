@@ -12,12 +12,12 @@
     <h1>Hukam <small>v17</small></h1>
     <label for="file">Choose file to upload</label>
     <input type="file" id="file" name="file" multiple>
-    <div id="images"></div>
+    <div id="files-container"></div>
   </div>
   <script src="storage.js"></script>
   <script>
     const input = document.querySelector('input')
-    input.addEventListener('change', HUKAM.updateImageDisplay);
+    input.addEventListener('change', HUKAM.handleSelectFiles);
     HUKAM.main()
 
     if ('serviceWorker' in navigator) {
