@@ -1,6 +1,6 @@
-importScripts('/cache-polyfill.js')
+importScripts('/sw/cache-polyfill.js')
 
-const CACHE_VERSION = 19
+const CACHE_VERSION = 20
 const CACHE_KEY = `hukam_v${CACHE_VERSION}`
 
 self.addEventListener('install', function (e) {
@@ -12,8 +12,6 @@ self.addEventListener('install', function (e) {
 })
 
 self.addEventListener('fetch', function (event) {
-  console.log(event.request.url)
-
   event.respondWith(
     caches
       .open(CACHE_KEY)

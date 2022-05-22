@@ -9,19 +9,20 @@
 </head>
 <body>
   <div id="app">
-    <h1>Hukam <small>v19</small></h1>
+    <h1>Hukam <small>v20</small></h1>
     <label for="file">Choose file to upload</label>
     <input type="file" id="file" name="file" multiple>
     <div id="files-container"></div>
   </div>
-  <script src="storage.js"></script>
+  <script src="js/logger.js"></script>
+  <script src="js/storage.js"></script>
   <script>
     const input = document.querySelector('input')
     input.addEventListener('change', HUKAM.handleSelectFiles);
     HUKAM.main()
 
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/sw.js').then(function() { console.log("Service Worker Registered"); });
+      navigator.serviceWorker.register('/sw/sw.js').then(function() { console.log("Service Worker Registered"); });
     }
   </script>
 </body>
