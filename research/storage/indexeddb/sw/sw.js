@@ -6,7 +6,7 @@ const CACHE_KEY = `hukam_v${CACHE_VERSION}`
 self.addEventListener('install', function (e) {
   e.waitUntil(
     caches.open(CACHE_KEY).then(function (cache) {
-      return cache.addAll(['/', '/index.html', '/storage.js'])
+      return cache.addAll(['/', '/index.html', 'js/logger.js', '/js/storage.js'])
     })
   )
 })
